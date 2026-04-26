@@ -44,31 +44,7 @@ AI Agent with advanced tool-calling capabilities, integrated with Home Assistant
 1. **Get Home Assistant API Token:**
    - Home Assistant → Profile → Long-Lived Access Tokens
    - Create a token, copy it
-
-2. **Configure Hermes config** (via Samba or File Editor addon):
-   
-   Create `~/.hermes/secrets/credentials.json`:
-   ```json
-   {
-     "ha_token": "YOUR_HA_TOKEN_HERE"
-   }
-   ```
-   
-   Edit `~/.hermes/config.yaml`:
-   ```yaml
-   model:
-     default: MiniMax-M2.7
-     provider: minimax
-   
-   # Your Hermes Agent API key
-   api_key: "YOUR_HERMES_API_KEY"
-   ```
-
-3. **Telegram (optional):**
-   ```yaml
-   telegram:
-     bot_token: "YOUR_BOT_TOKEN"
-   ```
+   - Paste it into addon options as `ha_token` (see Quick Setup below)
 
 ### Options
 
@@ -77,6 +53,24 @@ AI Agent with advanced tool-calling capabilities, integrated with Home Assistant
 | `log_level` | enum | `info` | Log verbosity |
 | `update_on_start` | bool | `false` | Pull latest git before start |
 | `git_branch` | string | `master` | Git branch to track |
+| `ha_token` | string | `""` | Home Assistant Long-Lived Access Token |
+
+### Quick Setup
+
+1. **Install the addon** from this repository
+2. **Add your HA token** in the addon configuration:
+
+```yaml
+ha_token: "eyJhbGciOiJIUzI1NiIs..."  # Your Long-Lived Access Token
+log_level: info
+update_on_start: false
+git_branch: master
+```
+
+3. **Start the addon** — token will be saved to persistent storage automatically
+4. Access the UI via **Sidebar → Hermes AI**
+
+> ⚠️ The token is stored in `/data/.hermes/secrets/credentials.json` (persistent share) and never leaves your Home Assistant instance.
 
 ## Updating Hermes
 

@@ -11,8 +11,18 @@ HERMES_HOME="/data"
 LOG_LEVEL=$(bashio::config 'log_level' 'info')
 UPDATE_ON_START=$(bashio::config 'update_on_start' 'false')
 GIT_BRANCH=$(bashio::config 'git_branch' 'master')
+HA_TOKEN=$(bashio::config 'ha_token')
 
 bashio::log.info "Hermes Agent starting..."
+
+# Set up credentials if ha_token provided
+if [ -n "$HA_TOKEN" ]; then
+    bashio::log.info "Configuring Home Assistant token..."
+    mkdir -p "${HERMES_HOME}/.hermes/secrets"
+    echo "{\"api_keys\":{\"homeassistant\":{\"token\":\"${HA_TOKEN}\"}}}" > "${HERMES_HOME}/.hermes/secrets/credentials.json"
+    chmod 600 "${HERMES_HOME}/.hermes/secrets/credentials.json"
+    bashio::log.info "HA token configured."
+fi
 
 # Check/update Hermes Agent if enabled
 if [ "$UPDATE_ON_START" = "true" ]; then

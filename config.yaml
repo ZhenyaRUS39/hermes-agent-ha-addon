@@ -28,9 +28,11 @@ options:
   log_level: info
   update_on_start: false
   git_branch: master
+  ha_token: ""
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
   update_on_start: bool?
   git_branch: str?
+  ha_token: str?
 image: ghcr.io/zhenyarus39/hermes-agent-linux-{arch}
 # Note: documentation_url is set in config.yaml header
