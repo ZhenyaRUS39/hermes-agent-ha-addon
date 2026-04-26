@@ -38,8 +38,9 @@ RUN mkdir -p "${HERMES_HOME}/.hermes"
 # Copy service files
 COPY rootfs /
 
-# Make run script executable
-RUN chmod +x /etc/services.d/hermes/run
+# Make service scripts executable (s6-overlay style)
+RUN chmod +x /etc/s6-overlay/s6-rc.d/hermes/run && \
+    chmod +x /etc/s6-overlay/s6-rc.d/hermes/finish
 
 # Healthcheck - Hermes gateway health endpoint
 HEALTHCHECK CMD curl --fail http://127.0.0.1:8000/health 2>/dev/null || exit 1
