@@ -1,0 +1,58 @@
+name: Check for Hermes Updates
+
+on:
+  schedule:
+    # Every Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check latest Hermes release
+        id: upstream
+        run: |
+          LATEST=$(curl -s "https://api.github.com/repos/NousResearch/hermes-agent/releases/latest" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['tag_name'])")
+          echo "Latest Hermes: $LATEST"
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+
+      - name: Check current pinned version
+        run: |
+          CURRENT=$(grep -oP '(?<=--branch )v[0-9]+\.[0-9]+' Dockerfile || grep -oP '(?<=hermes-agent/tree/)v[0-9]+\.[0-9]+' Dockerfile | head -1)
+          echo "Currently pinned: $CURRENT"
+          echo "current=$CURRENT" >> $GITHUB_OUTPUT
+
+      - name: Update Dockerfile if newer version
+        if: steps.upstream.outputs.latest != steps.upstream.outputs.current
+        run: |
+          CURRENT=$(grep -oP '(?<=--branch )v[0-9]+\.[0-9]+' Dockerfile | head -1)
+          LATEST="${{ steps.upstream.outputs.latest }}"
+          echo "Updating Dockerfile: $CURRENT → $LATEST"
+          
+          # Update the clone command to use new tag
+          sed -i "s|git clone --branch $CURRENT https://github.com/NousResearch/hermes-agent.git|git clone --branch $LATEST https://github.com/NousResearch/hermes-agent.git|" Dockerfile
+          
+          # Also update config.yaml version to match
+          sed -i "s/^version: \"[^\"]*\"/version: \"$LATEST\"/" config.yaml
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update Hermes to ${{ steps.upstream.outputs.latest }}'
+          title: 'Hermes Update: ${{ steps.upstream.outputs.current }} → ${{ steps.upstream.outputs.latest }}'
+          body: |
+            ## Hermes Agent Update Available
+
+            **Upstream:** NousResearch/hermes-agent
+            **Current:** ${{ steps.upstream.outputs.current }}
+            **New:** ${{ steps.upstream.outputs.latest }}
+
+            Auto-created PR. Merging will trigger a new Docker build and publish.
+          branch: chore/update-hermes
+          delete-branch: true
+          labels: automerge

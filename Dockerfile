@@ -17,12 +17,19 @@ RUN apk add --no-cache \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
         -exec rm -rf '{}' + || true
 
+# Pin specific Hermes version (update this when new release is available)
+# Check https://github.com/NousResearch/hermes-agent/releases for latest
+ARG HERMES_VERSION=v0.11.0
+
 # Install Hermes Agent
 WORKDIR /opt
 
-# Clone Hermes Agent (persistent in /data via map)
-RUN git clone https://github.com/NousResearch/hermes-agent.git "${HERMES_HOME}/hermes-agent" && \
-    echo "Cloned Hermes Agent"
+# Clone specific tagged release (depth=1 for faster clone)
+RUN git clone --branch ${HERMES_VERSION} --depth 1 https://github.com/NousResearch/hermes-agent.git "${HERMES_HOME}/hermes-agent" && \
+    echo "Cloned Hermes Agent ${HERMES_VERSION}"
+
+# ARG for build-time, ENV for runtime
+ENV HERMES_VERSION=${HERMES_VERSION}
 
 # Set up venv and install Hermes with dependencies
 WORKDIR "${HERMES_HOME}/hermes-agent"
