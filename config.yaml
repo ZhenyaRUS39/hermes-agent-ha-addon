@@ -32,5 +32,5 @@ schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
   update_on_start: bool?
   git_branch: str?
-image: ghcr.io/evgeniievgenii/hermes-agent-{arch}
+image: ghcr.io/evgeniievgenii/hermes-agent-linux-{arch}
 # Note: documentation_url is set in config.yaml header
