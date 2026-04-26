@@ -11,6 +11,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            build_from: ghcr.io/home-assistant/amd64-base:3.23
+          - arch: aarch64
+            build_from: ghcr.io/home-assistant/aarch64-base:3.23
     permissions:
       contents: read
       packages: write
@@ -37,30 +44,18 @@ jobs:
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
             type=sha
 
-      - name: Build and push AMD64
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
-          platforms: linux/amd64
+          platforms: linux/${{ matrix.arch }}
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/hermes-agent-amd64:${{ github.sha }}
+          tags: ghcr.io/${{ github.repository_owner }}/hermes-agent-${{ matrix.arch }}:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.23
-
-      - name: Build and push AArch64
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/arm64
-          push: true
-          tags: ghcr.io/${{ github.repository_owner }}/hermes-agent-aarch64:${{ github.sha }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            BUILD_FROM=ghcr.io/home-assistant/aarch64-base:3.23
+            BUILD_FROM=${{ matrix.build_from }}
 
   create-release:
     needs: build
