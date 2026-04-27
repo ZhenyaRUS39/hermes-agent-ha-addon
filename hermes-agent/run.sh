@@ -9,7 +9,7 @@ log_info() { echo "[INFO] $*"; }
 log_warning() { echo "[WARNING] $*" >&2; }
 log_error() { echo "[ERROR] $*" >&2; }
 
-# Read config from options.json (like Spoolman does)
+# Read config from options.json
 get_config() {
     local key="$1"
     local default="${2:-}"
@@ -17,6 +17,7 @@ get_config() {
 }
 
 config_exists() {
+    local key="$1"
     jq -e ".$key" "$OPTIONS_FILE" >/dev/null 2>&1
 }
 
@@ -64,7 +65,6 @@ fi
 cd "$HERMES_HOME"
 log_info "Starting Hermes Gateway..."
 
-# Use exec so hermes gateway becomes PID 1
 exec hermes gateway \
     --host 0.0.0.0 \
     --port 8000 \
