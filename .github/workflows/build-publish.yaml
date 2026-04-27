@@ -15,9 +15,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          sparse-checkout: hermes-agent
-          sparse-checkout-cone-mode: false
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -38,7 +35,6 @@ jobs:
 
       - name: Build and push amd64
         run: |
-          cd hermes-agent
           docker buildx build --push \
             --platform linux/amd64 \
             --tag ghcr.io/zhenyarus39/hermes-agent/linux-amd64:${{ steps.version.outputs.version }} \
@@ -49,7 +45,6 @@ jobs:
 
       - name: Build and push aarch64
         run: |
-          cd hermes-agent
           docker buildx build --push \
             --platform linux/aarch64 \
             --tag ghcr.io/zhenyarus39/hermes-agent/linux-aarch64:${{ steps.version.outputs.version }} \
