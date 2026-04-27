@@ -25,10 +25,9 @@ RUN python3 -m venv venv && \
 
 RUN mkdir -p "${HERMES_HOME}/.hermes"
 
-COPY rootfs /
+COPY run.sh /run.sh
+RUN chmod +x /run.sh
 
-RUN chmod +x /etc/s6-overlay/s6-rc.d/hermes/run && \
-    chmod +x /etc/s6-overlay/s6-rc.d/hermes/finish
 
 HEALTHCHECK CMD curl --fail http://127.0.0.1:8000/health 2>/dev/null || exit 1
 
