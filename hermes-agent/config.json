@@ -1,6 +1,6 @@
 {
   "name": "Hermes Agent",
-  "version": "2026.4.23",
+  "version": "v2026.4.23",
   "slug": "hermes_agent",
   "description": "Hermes Agent for Home Assistant",
   "arch": [
