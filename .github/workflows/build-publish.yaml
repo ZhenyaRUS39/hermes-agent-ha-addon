@@ -36,17 +36,33 @@ jobs:
           echo "VERSION=${VERSION}"
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Build and push with bake
+      - name: Build and push amd64
         run: |
           cd hermes-agent
-          docker buildx bake             --push             --set "*.platform=linux/amd64,linux/aarch64"             --set "*.image=ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }}"             --set "*.arch=amd64"             --set "*.build-arg:HERMES_VERSION=${{ steps.version.outputs.version }}"             --set "*.build-arg:BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.23"             --set "*.arch=aarch64"             --set "*.aarch64:build-arg:BUILD_FROM=ghcr.io/home-assistant/aarch64-base:3.23"             -f - <<'BAKEFILE'
-target "default" {
-  platforms = ["linux/amd64", "linux/aarch64"]
-}
-BAKEFILE
+          docker buildx build --push \
+            --platform linux/amd64 \
+            --tag ghcr.io/zhenyarus39/hermes-agent/linux-amd64:${{ steps.version.outputs.version }} \
+            --tag ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }} \
+            --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
+            --build-arg BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.23 \
+            hermes-agent/
 
-      - name: Verify manifests
+      - name: Build and push aarch64
         run: |
-          echo "Checking GHCR manifests..."
-          echo "v2026.4.23:"
-          docker buildx imagetools inspect ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }}
+          cd hermes-agent
+          docker buildx build --push \
+            --platform linux/aarch64 \
+            --tag ghcr.io/zhenyarus39/hermes-agent/linux-aarch64:${{ steps.version.outputs.version }} \
+            --tag ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }} \
+            --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
+            --build-arg BUILD_FROM=ghcr.io/home-assistant/aarch64-base:3.23 \
+            hermes-agent/
+
+      - name: Create manifest list
+        run: |
+          docker manifest create \
+            ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }} \
+            ghcr.io/zhenyarus39/hermes-agent/linux-amd64:${{ steps.version.outputs.version }} \
+            ghcr.io/zhenyarus39/hermes-agent/linux-aarch64:${{ steps.version.outputs.version }}
+          docker manifest push \
+            ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }}
