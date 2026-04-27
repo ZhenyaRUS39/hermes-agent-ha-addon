@@ -61,7 +61,7 @@ jobs:
           platforms: linux/${{ matrix.arch }}
           push: true
           tags: |
-            ghcr.io/${{ github.actor }}/hermes-agent:linux-${{ matrix.arch }}-${{ steps.hermes-version.outputs.version }}
+            ghcr.io/${{ github.actor }}/hermes-agent:linux-${{ matrix.arch }}:${{ steps.hermes-version.outputs.version }}
             ghcr.io/${{ github.actor }}/hermes-agent:linux-${{ matrix.arch }}:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
