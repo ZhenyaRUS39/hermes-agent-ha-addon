@@ -1,8 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC1091
 
-set -e
-
 HERMES_HOME="/data"
 OPTIONS_FILE="/data/options.json"
 
@@ -19,7 +17,7 @@ get_config() {
 }
 
 config_exists() {
-    jq -e ".$1" "$OPTIONS_FILE" >/dev/null 2>&1
+    jq -e ".$key" "$OPTIONS_FILE" >/dev/null 2>&1
 }
 
 log_info "Hermes Agent starting..."
@@ -66,6 +64,7 @@ fi
 cd "$HERMES_HOME"
 log_info "Starting Hermes Gateway..."
 
+# Use exec so hermes gateway becomes PID 1
 exec hermes gateway \
     --host 0.0.0.0 \
     --port 8000 \
