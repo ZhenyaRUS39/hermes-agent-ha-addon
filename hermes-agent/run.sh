@@ -4,16 +4,14 @@
 HERMES_HOME="/data"
 OPTIONS_FILE="/data/options.json"
 
-# Logging
 log_info() { echo "[INFO] $*"; }
 log_warning() { echo "[WARNING] $*" >&2; }
 log_error() { echo "[ERROR] $*" >&2; }
 
-# Read config from options.json
 get_config() {
     local key="$1"
     local default="${2:-}"
-    jq -r ".$key // "$default"" "$OPTIONS_FILE" 2>/dev/null
+    jq -r ".$key // \\"$default\\"" "$OPTIONS_FILE" 2>/dev/null
 }
 
 config_exists() {
@@ -23,23 +21,21 @@ config_exists() {
 
 log_info "Hermes Agent starting..."
 
-# Configure Home Assistant token if provided
-if config_exists 'ha_token'; then
-    HA_TOKEN=$(get_config 'ha_token')
+if config_exists "ha_token"; then
+    HA_TOKEN=$(get_config "ha_token")
     if [ -n "$HA_TOKEN" ]; then
         log_info "Configuring Home Assistant token..."
         mkdir -p "${HERMES_HOME}/.hermes/secrets"
-        echo "{\"api_keys\":{\"homeassistant\":\"$HA_TOKEN\"}}" > "${HERMES_HOME}/.hermes/secrets/credentials.json"
+        echo "{\\"api_keys\\":{\\"homeassistant\\":\\"$HA_TOKEN\\"}}" > "${HERMES_HOME}/.hermes/secrets/credentials.json"
         chmod 600 "${HERMES_HOME}/.hermes/secrets/credentials.json"
         log_info "HA token configured."
     fi
 fi
 
-LOG_LEVEL=$(get_config 'log_level' 'info')
-UPDATE_ON_START=$(get_config 'update_on_start' 'false')
-GIT_BRANCH=$(get_config 'git_branch' 'master')
+LOG_LEVEL=$(get_config "log_level" "info")
+UPDATE_ON_START=$(get_config "update_on_start" "false")
+GIT_BRANCH=$(get_config "git_branch" "master")
 
-# Update check
 if [ "$UPDATE_ON_START" = "true" ]; then
     log_info "Checking for Hermes Agent updates..."
     if [ -d "${HERMES_HOME}/hermes-agent/.git" ]; then
@@ -61,7 +57,6 @@ else
     log_info "Skipping update check (update_on_start=false)"
 fi
 
-# Start Hermes Gateway
 cd "$HERMES_HOME"
 log_info "Starting Hermes Gateway..."
 
@@ -71,3 +66,4 @@ exec hermes gateway \
     --log-level "$LOG_LEVEL" \
     --insecure \
     --hermes-home "$HERMES_HOME"
+
