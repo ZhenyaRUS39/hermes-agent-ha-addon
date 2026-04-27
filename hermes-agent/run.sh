@@ -11,7 +11,7 @@ log_error() { echo "[ERROR] $*" >&2; }
 get_config() {
     local key="$1"
     local default="${2:-}"
-    jq -r ".$key // \\"$default\\"" "$OPTIONS_FILE" 2>/dev/null
+    jq -r ".$key // \"$default\"" "$OPTIONS_FILE" 2>/dev/null
 }
 
 config_exists() {
@@ -26,7 +26,7 @@ if config_exists "ha_token"; then
     if [ -n "$HA_TOKEN" ]; then
         log_info "Configuring Home Assistant token..."
         mkdir -p "${HERMES_HOME}/.hermes/secrets"
-        echo "{\\"api_keys\\":{\\"homeassistant\\":\\"$HA_TOKEN\\"}}" > "${HERMES_HOME}/.hermes/secrets/credentials.json"
+        echo "{\"api_keys\":{\"homeassistant\":\"$HA_TOKEN\"}}" > "${HERMES_HOME}/.hermes/secrets/credentials.json"
         chmod 600 "${HERMES_HOME}/.hermes/secrets/credentials.json"
         log_info "HA token configured."
     fi
