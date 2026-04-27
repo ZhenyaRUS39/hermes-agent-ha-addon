@@ -14,15 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        include:
-          - arch: amd64
-            build_from: ghcr.io/home-assistant/amd64-base:3.23
-          - arch: aarch64
-            build_from: ghcr.io/home-assistant/aarch64-base:3.23
+        arch: [amd64, aarch64]
     permissions:
       contents: read
       packages: write
-      id-token: write
 
     steps:
       - name: Checkout
@@ -44,19 +39,33 @@ jobs:
           cd hermes-agent
           VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+\.[0-9]+' Dockerfile || grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+' Dockerfile)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "HERMES_VERSION=$VERSION"
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: ./hermes-agent
-          platforms: linux/${{ matrix.arch }}
-          push: true
-          tags: |
-            ghcr.io/zhenyarus39/hermes-agent:linux-${{ matrix.arch }}:${{ steps.hermes-version.outputs.version }}
-            ghcr.io/zhenyarus39/hermes-agent:linux-${{ matrix.arch }}:${{ github.sha }}
-          build-args: |
-            BUILD_FROM=${{ matrix.build_from }}
-            HERMES_VERSION=${{ steps.hermes-version.outputs.version }}
+      - name: Build image
+        env:
+          HERMES_VERSION: ${{ steps.hermes-version.outputs.version }}
+        run: |
+          ARCH=${{ matrix.arch }}
+          BUILD_FROM="ghcr.io/home-assistant/${ARCH}-base:3.23"
+          TAG="ghcr.io/zhenyarus39/hermes-agent:linux-${ARCH}:${HERMES_VERSION}"
+          echo "Building from: ${BUILD_FROM}"
+          echo "Tag: ${TAG}"
+          docker buildx build \
+            --progress=plain \
+            --platform linux/${ARCH} \
+            --build-arg BUILD_FROM=${BUILD_FROM} \
+            --build-arg HERMES_VERSION=${HERMES_VERSION} \
+            --tag ${TAG} \
+            --push false \
+            ./hermes-agent
+
+      - name: Push image
+        env:
+          HERMES_VERSION: ${{ steps.hermes-version.outputs.version }}
+        run: |
+          ARCH=${{ matrix.arch }}
+          TAG="ghcr.io/zhenyarus39/hermes-agent:linux-${ARCH}:${HERMES_VERSION}"
+          docker push ${TAG}
 
   create-release:
     needs: build
