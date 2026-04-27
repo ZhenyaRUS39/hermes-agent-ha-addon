@@ -1,0 +1,10 @@
+{
+  "name": "Hermes Agent",
+  "url": "https://github.com/ZhenyaRUS39/hermes-agent-ha-addon",
+  "iot_class": "cloud_push",
+  "render_embedding": [
+    "Hermes Agent",
+    "AI Assistant",
+    "Home Assistant integration"
+  ]
+}
