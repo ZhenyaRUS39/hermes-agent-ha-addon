@@ -1,0 +1,42 @@
+{
+  "name": "Hermes Agent",
+  "version": "2026.4.23",
+  "slug": "hermes_agent",
+  "description": "AI Agent with advanced tool-calling - integrated with Home Assistant via HA API",
+  "url": "https://github.com/ZhenyaRUS39/hermes-agent-ha-addon",
+  "arch": [
+    "amd64",
+    "aarch64"
+  ],
+  "startup": "services",
+  "boot": "auto",
+  "init": false,
+  "hassio_api": true,
+  "homeassistant_api": true,
+  "host_network": true,
+  "ingress": true,
+  "ingress_port": 8000,
+  "ingress_stream": true,
+  "panel_icon": "mdi:robot",
+  "panel_title": "Hermes AI",
+  "map": [
+    "addon_config:rw",
+    "homeassistant_config:rw",
+    "share:rw",
+    "ssl:rw",
+    "backup:rw"
+  ],
+  "options": {
+    "log_level": "info",
+    "update_on_start": false,
+    "git_branch": "master",
+    "ha_token": ""
+  },
+  "schema": {
+    "log_level": "str?",
+    "update_on_start": "bool?",
+    "git_branch": "str?",
+    "ha_token": "str?"
+  },
+  "image": "ghcr.io/zhenyarus39/hermes-agent/linux-{arch}:v{version}"
+}
