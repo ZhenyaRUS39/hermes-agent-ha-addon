@@ -33,12 +33,20 @@ jobs:
           echo "VERSION=${VERSION}"
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
-      - name: Build and push
+      - name: Debug build
         run: |
+          echo "=== DEBUG ==="
+          echo "pwd: $(pwd)"
+          echo "ls hermes-agent:"
+          ls -la hermes-agent/ || echo "NOT FOUND"
+          echo "Docker version:"
+          docker version
+          echo "Buildx version:"
+          docker buildx version
+          echo "=== ATTEMPTING BUILD ==="
           cd hermes-agent
           docker buildx build --push \
             --platform linux/amd64 \
             --tag ghcr.io/zhenyarus39/hermes-agent:linux-amd64:${{ env.VERSION }} \
-            --tag ghcr.io/zhenyarus39/hermes-agent:${{ env.VERSION }} \
             --build-arg HERMES_VERSION=${{ env.VERSION }} \
-            .
+            . 2>&1 || echo "BUILD FAILED with code $?"
