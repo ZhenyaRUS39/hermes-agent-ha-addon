@@ -1,0 +1,67 @@
+#!/command/with-contenv bash
+# vim: ft=bash
+# ==============================================================================
+# Hermes Agent - Home Assistant Addon
+# ==============================================================================
+
+# shellcheck shell=bash
+
+# Configuration from addon options
+HERMES_HOME="/data"
+LOG_LEVEL=$(bashio::config 'log_level' 'info')
+UPDATE_ON_START=$(bashio::config 'update_on_start' 'false')
+GIT_BRANCH=$(bashio::config 'git_branch' 'master')
+HA_TOKEN=$(bashio::config 'ha_token')
+
+bashio::log.info "Hermes Agent starting..."
+
+# Set up credentials if ha_token provided
+if [ -n "$HA_TOKEN" ]; then
+    bashio::log.info "Configuring Home Assistant token..."
+    mkdir -p "${HERMES_HOME}/.hermes/secrets"
+    echo "{\"api_keys\":{\"homeassistant\":{\"token\":\"${HA_TOKEN}\"}}}" > "${HERMES_HOME}/.hermes/secrets/credentials.json"
+    chmod 600 "${HERMES_HOME}/.hermes/secrets/credentials.json"
+    bashio::log.info "HA token configured."
+fi
+
+# Check/update Hermes Agent if enabled
+if [ "$UPDATE_ON_START" = "true" ]; then
+    bashio::log.info "Checking for Hermes Agent updates..."
+
+    if [ -d "$HERMES_HOME/hermes-agent/.git" ]; then
+        cd "$HERMES_HOME/hermes-agent"
+        git fetch origin "$GIT_BRANCH"
+
+        LOCAL=$(git rev-parse HEAD)
+        REMOTE=$(git rev-parse "origin/${GIT_BRANCH}")
+
+        if [ "$LOCAL" != "$REMOTE" ]; then
+            bashio::log.info "Update found! Pulling latest..."
+            git pull origin "$GIT_BRANCH"
+
+            . venv/bin/activate
+            pip install -e . --quiet
+            bashio::log.info "Hermes Agent updated!"
+        else
+            bashio::log.info "Hermes Agent already up to date."
+        fi
+    else
+        bashio::log.warning "Hermes Agent not found at ${HERMES_HOME}/hermes-agent. Please restart addon to install."
+    fi
+else
+    bashio::log.info "Skipping update check (update_on_start=false)"
+fi
+
+# Start Hermes Gateway
+bashio::log.info "Starting Hermes Gateway..."
+
+cd "$HERMES_HOME"
+
+. hermes-agent/venv/bin/activate
+
+exec hermes gateway \
+    --host 0.0.0.0 \
+    --port 8000 \
+    --log-level "$LOG_LEVEL" \
+    --insecure \
+    --hermes-home "$HERMES_HOME"
