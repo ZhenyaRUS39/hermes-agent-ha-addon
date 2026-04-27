@@ -8,9 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [amd64, aarch64]
     permissions:
       contents: read
       packages: write
@@ -33,11 +30,23 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract version
+        id: version
         run: |
           VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+\.[0-9]+' hermes-agent/Dockerfile)
           echo "VERSION=${VERSION}"
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Build and push
+      - name: Build and push with bake
         run: |
-          docker buildx build --push             --platform linux/${{ matrix.arch }}             --tag ghcr.io/zhenyarus39/hermes-agent:${{ env.VERSION }}             --tag ghcr.io/zhenyarus39/hermes-agent/linux-${{ matrix.arch }}:${{ env.VERSION }}             --build-arg HERMES_VERSION=${{ env.VERSION }}             --build-arg BUILD_FROM=ghcr.io/home-assistant/${{ matrix.arch }}-base:3.23             --no-cache             hermes-agent/
+          cd hermes-agent
+          docker buildx bake             --push             --set "*.platform=linux/amd64,linux/aarch64"             --set "*.image=ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }}"             --set "*.arch=amd64"             --set "*.build-arg:HERMES_VERSION=${{ steps.version.outputs.version }}"             --set "*.build-arg:BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.23"             --set "*.arch=aarch64"             --set "*.aarch64:build-arg:BUILD_FROM=ghcr.io/home-assistant/aarch64-base:3.23"             -f - <<'BAKEFILE'
+target "default" {
+  platforms = ["linux/amd64", "linux/aarch64"]
+}
+BAKEFILE
+
+      - name: Verify manifests
+        run: |
+          echo "Checking GHCR manifests..."
+          echo "v2026.4.23:"
+          docker buildx imagetools inspect ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }}
