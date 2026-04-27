@@ -5,7 +5,7 @@ ENV PIP_BREAK_SYSTEM_PACKAGES=1
 ENV PYTHONUNBUFFERED=1
 ENV HERMES_HOME="/data"
 
-RUN apk add --no-cache         git         python3         py3-pip         curl     && pip3 install --no-cache-dir --break-system-packages pip     && find /usr/local         \( -type d -a -name test -o -name tests -o -name '__pycache__' \)         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \)         -exec rm -rf '{}' + || true
+RUN apk add --no-cache git curl
 
 ARG HERMES_VERSION=v2026.4.23
 
