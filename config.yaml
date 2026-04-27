@@ -34,4 +34,4 @@ schema:
   update_on_start: bool?
   git_branch: str?
   ha_token: str?
-image: ghcr.io/zhenyarus39/hermes-agent-linux-{arch}
+image: ghcr.io/zhenyarus39/hermes-agent:linux-{arch}:v2026.4.23
