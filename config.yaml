@@ -35,4 +35,3 @@ schema:
   git_branch: str?
   ha_token: str?
 image: ghcr.io/zhenyarus39/hermes-agent-linux-{arch}
-# Note: documentation_url is set in config.yaml header
