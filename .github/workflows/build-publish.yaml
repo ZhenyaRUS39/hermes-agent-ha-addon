@@ -51,19 +51,9 @@ jobs:
             --build-arg BUILD_FROM=ghcr.io/home-assistant/aarch64-base:3.23 \
             hermes-agent/
 
-      - name: Create and push manifest list
+      - name: Create manifest list with buildx imagetools
         run: |
-          docker manifest create \
-            ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }} \
+          docker buildx imagetools create \
+            --tag ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }} \
             ghcr.io/zhenyarus39/hermes-agent/linux-amd64:${{ steps.version.outputs.version }} \
             ghcr.io/zhenyarus39/hermes-agent/linux-aarch64:${{ steps.version.outputs.version }}
-          docker manifest annotate \
-            ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }} \
-            ghcr.io/zhenyarus39/hermes-agent/linux-amd64:${{ steps.version.outputs.version }} \
-            --os linux --arch amd64
-          docker manifest annotate \
-            ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }} \
-            ghcr.io/zhenyarus39/hermes-agent/linux-aarch64:${{ steps.version.outputs.version }} \
-            --os linux --arch arm64
-          docker manifest push --purge \
-            ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }}
