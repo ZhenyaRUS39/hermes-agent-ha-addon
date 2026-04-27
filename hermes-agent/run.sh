@@ -66,4 +66,3 @@ exec hermes gateway \
     --log-level "$LOG_LEVEL" \
     --insecure \
     --hermes-home "$HERMES_HOME"
-
