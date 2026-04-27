@@ -19,7 +19,7 @@ RUN apk add --no-cache \
 
 # Pin specific Hermes version (update this when new release is available)
 # Check https://github.com/NousResearch/hermes-agent/releases for latest
-ARG HERMES_VERSION=v0.11.0
+ARG HERMES_VERSION=v2026.4.23
 
 # Install Hermes Agent
 WORKDIR /opt
