@@ -26,7 +26,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: zhenyarus39
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract version
@@ -35,12 +35,7 @@ jobs:
           VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+\.[0-9]+' Dockerfile)
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
-      - name: Build and push
+      - name: Build and push multi-platform
         run: |
           cd hermes-agent
-          docker buildx build --push \
-            --platform linux/${{ matrix.arch }} \
-            --tag ghcr.io/zhenyarus39/hermes-agent/linux-${{ matrix.arch }}:${{ env.VERSION }} \
-            --build-arg HERMES_VERSION=${{ env.VERSION }} \
-            --build-arg BUILD_FROM=ghcr.io/home-assistant/${{ matrix.arch }}-base:3.23 \
-            .
+          docker buildx build --push             --platform linux/${{ matrix.arch }}             --tag ghcr.io/${{ github.actor }}/hermes-agent:${{ env.VERSION }}             --tag ghcr.io/${{ github.actor }}/hermes-agent/linux-${{ matrix.arch }}:${{ env.VERSION }}             --build-arg HERMES_VERSION=${{ env.VERSION }}             --build-arg BUILD_FROM=ghcr.io/home-assistant/${{ matrix.arch }}-base:3.23             .
