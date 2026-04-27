@@ -30,15 +30,14 @@ jobs:
         run: |
           cd hermes-agent
           VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+\.[0-9]+' Dockerfile)
-          echo "VERSION=${VERSION}"
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
       - name: Build and push
         run: |
-          set -x
           cd hermes-agent
           docker buildx build --push \
-            --platform linux/amd64 \
-            --tag ghcr.io/zhenyarus39/hermes-agent:linux-amd64:${{ env.VERSION }} \
+            --platform linux/amd64,linux/aarch64 \
+            --tag ghcr.io/zhenyarus39/hermes-agent/linux-amd64:${{ env.VERSION }} \
+            --tag ghcr.io/zhenyarus39/hermes-agent/linux-aarch64:${{ env.VERSION }} \
             --build-arg HERMES_VERSION=${{ env.VERSION }} \
             .
