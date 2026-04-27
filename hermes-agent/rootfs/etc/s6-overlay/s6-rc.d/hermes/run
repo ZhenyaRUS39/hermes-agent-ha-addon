@@ -1,5 +1,7 @@
-#!/bin/bash
-set -e
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Hermes Agent - Home Assistant Addon
+# ==============================================================================
 
 HERMES_HOME="/data"
 LOG_LEVEL=$(bashio::config 'log_level' 'info')
@@ -10,12 +12,15 @@ HA_TOKEN=$(bashio::config 'ha_token')
 bashio::log.info "Hermes Agent starting..."
 
 # Configure Home Assistant token if provided
-if [ -n "$HA_TOKEN" ]; then
-    bashio::log.info "Configuring Home Assistant token..."
-    mkdir -p "${HERMES_HOME}/.hermes/secrets"
-    echo '{"api_keys":{"homeassistant":"'"$HA_TOKEN"'"}}' > "${HERMES_HOME}/.hermes/secrets/credentials.json"
-    chmod 600 "${HERMES_HOME}/.hermes/secrets/credentials.json"
-    bashio::log.info "HA token configured."
+if bashio::config.exists 'ha_token'; then
+    HA_TOKEN=$(bashio::config 'ha_token')
+    if [ -n "$HA_TOKEN" ]; then
+        bashio::log.info "Configuring Home Assistant token..."
+        mkdir -p "${HERMES_HOME}/.hermes/secrets"
+        echo "{\"api_keys\":{\"homeassistant\":\"$HA_TOKEN\"}}" > "${HERMES_HOME}/.hermes/secrets/credentials.json"
+        chmod 600 "${HERMES_HOME}/.hermes/secrets/credentials.json"
+        bashio::log.info "HA token configured."
+    fi
 fi
 
 # Check/update Hermes Agent if enabled
@@ -42,8 +47,8 @@ fi
 
 # Start Hermes Gateway
 cd "$HERMES_HOME"
-
 bashio::log.info "Starting Hermes Gateway..."
+
 exec hermes gateway \
     --host 0.0.0.0 \
     --port 8000 \
