@@ -40,8 +40,7 @@ jobs:
       - name: Get Hermes version
         id: hermes-version
         run: |
-          # Extract full version tag (supports v0.11.0, v2026.4.23, etc.)
-          VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+\.[0-9]+' Dockerfile || grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+' Dockerfile)
+          VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+\.[0-9]+' hermes-agent/Dockerfile || grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+' hermes-agent/Dockerfile)
           echo "Hermes version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
@@ -59,7 +58,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./hermes-agent
           platforms: linux/${{ matrix.arch }}
           push: true
           tags: |
