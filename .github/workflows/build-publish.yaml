@@ -48,7 +48,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.actor }}/hermes-agent
+          images: ghcr.io/zhenyarus39/hermes-agent
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -61,8 +61,8 @@ jobs:
           platforms: linux/${{ matrix.arch }}
           push: true
           tags: |
-            ghcr.io/${{ github.actor }}/hermes-agent:linux-${{ matrix.arch }}:${{ steps.hermes-version.outputs.version }}
-            ghcr.io/${{ github.actor }}/hermes-agent:linux-${{ matrix.arch }}:${{ github.sha }}
+            ghcr.io/zhenyarus39/hermes-agent:linux-${{ matrix.arch }}-${{ steps.hermes-version.outputs.version }}
+            ghcr.io/zhenyarus39/hermes-agent:linux-${{ matrix.arch }}:${{ github.sha }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BUILD_FROM=${{ matrix.build_from }}
