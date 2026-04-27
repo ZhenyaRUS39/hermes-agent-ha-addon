@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64, aarch64]
     permissions:
       contents: read
       packages: write
@@ -30,14 +33,14 @@ jobs:
         run: |
           cd hermes-agent
           VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+\.[0-9]+' Dockerfile)
-          echo "VERSION=${VERSION}"
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
       - name: Build and push
         run: |
           cd hermes-agent
           docker buildx build --push \
-            --platform linux/amd64 \
-            --tag ghcr.io/zhenyarus39/hermes-agent:linux-amd64:${{ env.VERSION }} \
+            --platform linux/${{ matrix.arch }} \
+            --tag ghcr.io/zhenyarus39/hermes-agent/linux-${{ matrix.arch }}:${{ env.VERSION }} \
             --build-arg HERMES_VERSION=${{ env.VERSION }} \
+            --build-arg BUILD_FROM=ghcr.io/home-assistant/${{ matrix.arch }}-base:3.23 \
             .
