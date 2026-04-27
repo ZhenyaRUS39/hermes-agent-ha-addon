@@ -40,7 +40,8 @@ jobs:
       - name: Get Hermes version
         id: hermes-version
         run: |
-          VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+' Dockerfile)
+          # Extract full version tag (supports v0.11.0, v2026.4.23, etc.)
+          VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+\.[0-9]+' Dockerfile || grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+' Dockerfile)
           echo "Hermes version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
