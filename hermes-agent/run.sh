@@ -57,10 +57,10 @@ else
     log_info "Skipping update check (update_on_start=false)"
 fi
 
-cd "$HERMES_HOME"
+cd "${HERMES_HOME}/hermes-agent"
 log_info "Starting Hermes Gateway..."
 
-exec hermes gateway \
+exec ./venv/bin/hermes gateway \
     --host 0.0.0.0 \
     --port 8000 \
     --log-level "$LOG_LEVEL" \
