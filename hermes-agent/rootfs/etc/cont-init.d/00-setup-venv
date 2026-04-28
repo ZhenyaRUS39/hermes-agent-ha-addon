@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bash
+# Hermes Agent venv location fix
+# Dockerfile clones to /data/hermes-agent/hermes-agent but agent expects /data/hermes-agent/venv
+# Solution: symlink /data/hermes-agent/venv → /data/hermes-agent/hermes-agent
+
+mkdir -p /data/hermes-agent
+
+if [ ! -e /data/hermes-agent/venv ] && [ -d /data/hermes-agent/hermes-agent/venv ]; then
+    echo "[INFO] Creating venv symlink..."
+    ln -s /data/hermes-agent/hermes-agent/venv /data/hermes-agent/venv
+fi
