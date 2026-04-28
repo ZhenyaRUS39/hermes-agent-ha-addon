@@ -48,7 +48,7 @@ if [ -n "$HASS_TOKEN" ]; then
   "platforms": {
     "homeassistant": {
       "enabled": true,
-      "token": "PLACEHOLDER"
+      "token": "placeholder"
     }
   }
 }
@@ -64,6 +64,20 @@ json.dump(gw, open('${HERMES_CONFIG}/gateway.json', 'w'))
 "
     log_info "Gateway config created."
 fi
+
+# Wait for venv to be ready (s6-rc may start services before cont-init finishes)
+VENV_PATH="${HERMES_INSTALL}/venv"
+TIMEOUT=60
+ELAPSED=0
+while [ ! -d "$VENV_PATH" ]; do
+    if [ $ELAPSED -ge $TIMEOUT ]; then
+        log_error "Venv not found at ${VENV_PATH} after ${TIMEOUT}s"
+        exit 1
+    fi
+    log_info "Waiting for venv at ${VENV_PATH}... (${ELAPSED}/${TIMEOUT}s)"
+    sleep 2
+    ELAPSED=$((ELAPSED + 2))
+done
 
 cd "${HERMES_INSTALL}"
 log_info "Starting Hermes Gateway..."
