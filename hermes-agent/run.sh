@@ -2,6 +2,7 @@
 # shellcheck disable=SC1091
 
 HERMES_HOME="/data"
+HERMES_CONFIG="${HERMES_HOME}/.hermes"
 OPTIONS_FILE="/data/options.json"
 HERMES_INSTALL="/data/hermes-agent"
 
@@ -23,14 +24,44 @@ config_exists() {
 log_info "Hermes Agent starting..."
 
 if config_exists "ha_token"; then
-    HA_TOKEN=$(get_config "ha_token")
+    HA_TOKEN="$(get_config "ha_token")"
     if [ -n "$HA_TOKEN" ]; then
-        log_info "Configuring Home Assistant token..."
-        mkdir -p "${HERMES_HOME}/.hermes/secrets"
-        echo "{\"api_keys\":{\"homeassistant\":\"$HA_TOKEN\"}}" > "${HERMES_HOME}/.hermes/secrets/credentials.json"
-        chmod 600 "${HERMES_HOME}/.hermes/secrets/credentials.json"
+        log_info "Configuring Home Assistant..."
+        mkdir -p "${HERMES_CONFIG}/secrets"
+        echo "{\"api_keys\":{\"homeassistant\":\"$HA_TOKEN\"}}" > "${HERMES_CONFIG}/secrets/credentials.json"
+        chmod 600 "${HERMES_CONFIG}/secrets/credentials.json"
+        export HASS_TOKEN="$HA_TOKEN"
         log_info "HA token configured."
     fi
+fi
+
+if config_exists "ha_url"; then
+    export HASS_URL="$(get_config "ha_url")"
+fi
+
+# Create gateway.json to enable homeassistant platform
+if [ -n "$HASS_TOKEN" ]; then
+    mkdir -p "${HERMES_CONFIG}"
+    cat > "${HERMES_CONFIG}/gateway.json" << 'EOF'
+{
+  "platforms": {
+    "homeassistant": {
+      "enabled": true,
+      "token": "PLACEHOLDER"
+    }
+  }
+}
+EOF
+    # Inject token from credentials (don't hardcode in gateway.json)
+    python3 -c "
+import json, os
+creds = json.load(open('${HERMES_CONFIG}/secrets/credentials.json'))
+token = creds.get('api_keys', {}).get('homeassistant', '')
+gw = json.load(open('${HERMES_CONFIG}/gateway.json'))
+gw['platforms']['homeassistant']['token'] = token
+json.dump(gw, open('${HERMES_CONFIG}/gateway.json', 'w'))
+"
+    log_info "Gateway config created."
 fi
 
 LOG_LEVEL=$(get_config "log_level" "info")
@@ -60,10 +91,5 @@ fi
 cd "${HERMES_INSTALL}"
 log_info "Starting Hermes Gateway..."
 
-exec ./venv/bin/hermes gateway run \
-    --host 0.0.0.0 \
-    --port 8000 \
-    --log-level "$LOG_LEVEL" \
-    --insecure \
-    --hermes-home "$HERMES_HOME"
+exec ./venv/bin/hermes gateway run
 
