@@ -4,7 +4,7 @@
 HERMES_HOME="/data"
 HERMES_CONFIG="${HERMES_HOME}/.hermes"
 OPTIONS_FILE="/data/options.json"
-HERMES_INSTALL="/data/hermes-agent"
+HERMES_INSTALL="/opt/hermes-agent"
 
 log_info() { echo "[INFO] $*" >&2; }
 log_warning() { echo "[WARNING] $*" >&2; }
@@ -23,6 +23,7 @@ config_exists() {
 
 log_info "Hermes Agent starting..."
 
+# Configure Home Assistant credentials
 if config_exists "ha_token"; then
     HA_TOKEN="$(get_config "ha_token")"
     if [ -n "$HA_TOKEN" ]; then
@@ -52,9 +53,9 @@ if [ -n "$HASS_TOKEN" ]; then
   }
 }
 EOF
-    # Inject token from credentials (don't hardcode in gateway.json)
+    # Inject token from credentials
     python3 -c "
-import json, os
+import json
 creds = json.load(open('${HERMES_CONFIG}/secrets/credentials.json'))
 token = creds.get('api_keys', {}).get('homeassistant', '')
 gw = json.load(open('${HERMES_CONFIG}/gateway.json'))
@@ -64,32 +65,7 @@ json.dump(gw, open('${HERMES_CONFIG}/gateway.json', 'w'))
     log_info "Gateway config created."
 fi
 
-LOG_LEVEL=$(get_config "log_level" "info")
-UPDATE_ON_START=$(get_config "update_on_start" "false")
-GIT_BRANCH=$(get_config "git_branch" "master")
-
-if [ "$UPDATE_ON_START" = "true" ]; then
-    log_info "Checking for Hermes Agent updates..."
-    if [ -d "${HERMES_INSTALL}/.git" ]; then
-        cd "${HERMES_INSTALL}"
-        git fetch origin "$GIT_BRANCH"
-        CURRENT=$(git rev-parse HEAD)
-        REMOTE=$(git rev-parse "origin/$GIT_BRANCH")
-        if [ "$CURRENT" != "$REMOTE" ]; then
-            log_info "Update found! Pulling latest..."
-            git pull origin "$GIT_BRANCH"
-            ./venv/bin/pip install -e . --quiet
-            log_info "Hermes Agent updated!"
-        else
-            log_info "Hermes Agent already up to date."
-        fi
-    fi
-else
-    log_info "Skipping update check (update_on_start=false)"
-fi
-
 cd "${HERMES_INSTALL}"
 log_info "Starting Hermes Gateway..."
 
 exec ./venv/bin/hermes gateway run
-
