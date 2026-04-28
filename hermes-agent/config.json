@@ -1,0 +1,14 @@
+{
+  "name": "Hermes Agent",
+  "version": "v2026.4.23",
+  "slug": "hermes_agent",
+  "description": "Hermes Agent for Home Assistant",
+  "arch": ["amd64", "aarch64"],
+  "startup": "services",
+  "boot": "auto",
+  "init": false,
+  "image": "ghcr.io/zhenyarus39/hermes-agent",
+  "ports": {"8000/tcp": 8000},
+  "options": {},
+  "schema": {}
+}
