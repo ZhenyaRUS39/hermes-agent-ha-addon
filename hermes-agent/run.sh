@@ -3,6 +3,7 @@
 
 HERMES_HOME="/data"
 OPTIONS_FILE="/data/options.json"
+HERMES_INSTALL="/usr/local/hermes-agent"
 
 log_info() { echo "[INFO] $*" >&2; }
 log_warning() { echo "[WARNING] $*" >&2; }
@@ -38,16 +39,15 @@ GIT_BRANCH=$(get_config "git_branch" "master")
 
 if [ "$UPDATE_ON_START" = "true" ]; then
     log_info "Checking for Hermes Agent updates..."
-    if [ -d "${HERMES_HOME}/hermes-agent/.git" ]; then
-        cd "${HERMES_HOME}/hermes-agent"
+    if [ -d "${HERMES_INSTALL}/.git" ]; then
+        cd "${HERMES_INSTALL}"
         git fetch origin "$GIT_BRANCH"
         CURRENT=$(git rev-parse HEAD)
         REMOTE=$(git rev-parse "origin/$GIT_BRANCH")
         if [ "$CURRENT" != "$REMOTE" ]; then
             log_info "Update found! Pulling latest..."
             git pull origin "$GIT_BRANCH"
-            . venv/bin/activate
-            pip install -e . --quiet
+            ./venv/bin/pip install -e . --quiet
             log_info "Hermes Agent updated!"
         else
             log_info "Hermes Agent already up to date."
@@ -57,7 +57,7 @@ else
     log_info "Skipping update check (update_on_start=false)"
 fi
 
-cd "${HERMES_HOME}/hermes-agent"
+cd "${HERMES_INSTALL}"
 log_info "Starting Hermes Gateway..."
 
 exec ./venv/bin/hermes gateway \

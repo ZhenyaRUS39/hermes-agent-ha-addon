@@ -1,11 +1,26 @@
 #!/usr/bin/with-contenv bash
-# Hermes Agent venv location fix
-# Dockerfile clones to /data/hermes-agent/hermes-agent but agent expects /data/hermes-agent/venv
-# Solution: symlink /data/hermes-agent/venv → /data/hermes-agent/hermes-agent
+# HA Addon: /data is ephemeral. We keep hermes-agent in /usr/local (persistent).
+# venv lives alongside the source, both survive container restarts.
 
-mkdir -p /data/hermes-agent
+echo "[INFO] Setting up Hermes Agent..."
 
-if [ ! -e /data/hermes-agent/venv ] && [ -d /data/hermes-agent/hermes-agent/venv ]; then
-    echo "[INFO] Creating venv symlink..."
-    ln -s /data/hermes-agent/hermes-agent/venv /data/hermes-agent/venv
+if [ ! -d /usr/local/hermes-agent/.git ]; then
+    echo "[INFO] Cloning Hermes Agent..."
+    git clone --branch "${HERMES_VERSION:-v2026.4.23}" --depth 1 \
+        https://github.com/NousResearch/hermes-agent.git \
+        /usr/local/hermes-agent
 fi
+
+cd /usr/local/hermes-agent
+
+if [ ! -d venv ]; then
+    echo "[INFO] Creating venv..."
+    python3 -m venv venv
+    ./venv/bin/pip install --upgrade pip
+    ./venv/bin/pip install -e .
+    echo "[INFO] Venv ready"
+else
+    echo "[INFO] Venv exists"
+fi
+
+echo "[INFO] Hermes Agent ready"
