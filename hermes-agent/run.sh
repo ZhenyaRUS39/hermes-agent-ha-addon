@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 # shellcheck disable=SC1091
 
 HERMES_HOME="/data"
 OPTIONS_FILE="/data/options.json"
 
-log_info() { echo "[INFO] $*"; }
+log_info() { echo "[INFO] $*" >&2; }
 log_warning() { echo "[WARNING] $*" >&2; }
 log_error() { echo "[ERROR] $*" >&2; }
 
@@ -66,3 +66,4 @@ exec hermes gateway \
     --log-level "$LOG_LEVEL" \
     --insecure \
     --hermes-home "$HERMES_HOME"
+
