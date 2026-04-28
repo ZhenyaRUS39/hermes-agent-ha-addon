@@ -2,26 +2,31 @@
 # HA Addon setup: /data is persistent — install once, fast starts after.
 # Only runs if /data/hermes-agent/venv doesn't exist.
 
-HERMES_HOME="/data"
 HERMES_VERSION="${HERMES_VERSION:-v2026.4.23}"
+TARGET_DIR="/data/hermes-agent"
 
 echo "[INFO] Setting up Hermes Agent..."
 
-# If already installed — skip clone/venv/pip, just verify
-if [ -f "${HERMES_HOME}/hermes-agent/venv/bin/hermes" ]; then
+# If already properly installed — skip
+if [ -f "${TARGET_DIR}/venv/bin/hermes" ]; then
     echo "[INFO] Hermes Agent already installed — skipping setup"
     exit 0
 fi
 
-# First-time setup
-mkdir -p "${HERMES_HOME}"
+# If partially installed (folder exists but no venv) — remove and reinstall
+if [ -d "${TARGET_DIR}" ]; then
+    echo "[INFO] Incomplete installation found — removing and reinstalling..."
+    rm -rf "${TARGET_DIR}"
+fi
+
+mkdir -p /data
 
 echo "[INFO] Cloning Hermes Agent ${HERMES_VERSION}..."
 git clone --branch "${HERMES_VERSION}" --depth 1 \
     https://github.com/NousResearch/hermes-agent.git \
-    "${HERMES_HOME}/hermes-agent"
+    "${TARGET_DIR}"
 
-cd "${HERMES_HOME}/hermes-agent"
+cd "${TARGET_DIR}"
 
 echo "[INFO] Creating venv..."
 python3 -m venv venv
