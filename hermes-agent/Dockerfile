@@ -18,7 +18,7 @@ RUN apk add --no-cache \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
         -exec rm -rf '{}' + || true
 
-ARG HERMES_VERSION=v2026.4.23
+ARG HERMES_VERSION=v2026.4.28
 
 WORKDIR /opt
 
