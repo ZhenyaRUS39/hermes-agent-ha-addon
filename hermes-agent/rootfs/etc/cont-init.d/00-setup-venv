@@ -1,26 +1,33 @@
 #!/usr/bin/with-contenv bash
-# HA Addon: /data is ephemeral. We keep hermes-agent in /usr/local (persistent).
-# venv lives alongside the source, both survive container restarts.
+# HA Addon setup: /data is persistent — install once, fast starts after.
+# Only runs if /data/hermes-agent/venv doesn't exist.
+
+HERMES_HOME="/data"
+HERMES_VERSION="${HERMES_VERSION:-v2026.4.23}"
 
 echo "[INFO] Setting up Hermes Agent..."
 
-if [ ! -d /usr/local/hermes-agent/.git ]; then
-    echo "[INFO] Cloning Hermes Agent..."
-    git clone --branch "${HERMES_VERSION:-v2026.4.23}" --depth 1 \
-        https://github.com/NousResearch/hermes-agent.git \
-        /usr/local/hermes-agent
+# If already installed — skip clone/venv/pip, just verify
+if [ -f "${HERMES_HOME}/hermes-agent/venv/bin/hermes" ]; then
+    echo "[INFO] Hermes Agent already installed — skipping setup"
+    exit 0
 fi
 
-cd /usr/local/hermes-agent
+# First-time setup
+mkdir -p "${HERMES_HOME}"
 
-if [ ! -d venv ]; then
-    echo "[INFO] Creating venv..."
-    python3 -m venv venv
-    ./venv/bin/pip install --upgrade pip
-    ./venv/bin/pip install -e .
-    echo "[INFO] Venv ready"
-else
-    echo "[INFO] Venv exists"
-fi
+echo "[INFO] Cloning Hermes Agent ${HERMES_VERSION}..."
+git clone --branch "${HERMES_VERSION}" --depth 1 \
+    https://github.com/NousResearch/hermes-agent.git \
+    "${HERMES_HOME}/hermes-agent"
+
+cd "${HERMES_HOME}/hermes-agent"
+
+echo "[INFO] Creating venv..."
+python3 -m venv venv
+
+echo "[INFO] Installing Hermes Agent..."
+./venv/bin/pip install --upgrade pip
+./venv/bin/pip install -e .
 
 echo "[INFO] Hermes Agent ready"

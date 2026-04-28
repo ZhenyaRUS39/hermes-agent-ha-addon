@@ -3,7 +3,7 @@
 
 HERMES_HOME="/data"
 OPTIONS_FILE="/data/options.json"
-HERMES_INSTALL="/usr/local/hermes-agent"
+HERMES_INSTALL="/data/hermes-agent"
 
 log_info() { echo "[INFO] $*" >&2; }
 log_warning() { echo "[WARNING] $*" >&2; }
