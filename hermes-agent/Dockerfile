@@ -36,12 +36,5 @@ RUN python3 -m venv venv && \
 
 RUN mkdir -p "${HERMES_HOME}/.hermes"
 
-COPY run.sh /run.sh
-RUN chmod +x /run.sh
-
-HEALTHCHECK CMD curl --fail http://127.0.0.1:8000/health 2>/dev/null || exit 1
-
-EXPOSE 8000
-
-CMD ["/run.sh"]
+COPY rootfs /
 
