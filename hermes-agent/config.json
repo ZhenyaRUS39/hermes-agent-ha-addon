@@ -7,7 +7,7 @@
   "startup": "services",
   "boot": "auto",
   "init": false,
-  "image": "ghcr.io/zhenyarus39/hermes-agent",
+  "image": "ghcr.io/zhenyarus39/hermes-agent/linux-{arch}:v2026.4.23",
   "ports": {"8000/tcp": 8000},
   "options": {},
   "schema": {}
