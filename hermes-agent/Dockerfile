@@ -20,4 +20,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
         -exec rm -rf '{}' + || true
 
+ARG HERMES_VERSION=v2026.4.23
+
 COPY rootfs /
