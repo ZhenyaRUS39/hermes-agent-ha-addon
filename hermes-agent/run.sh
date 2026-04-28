@@ -60,7 +60,7 @@ fi
 cd "${HERMES_INSTALL}"
 log_info "Starting Hermes Gateway..."
 
-exec ./venv/bin/hermes gateway \
+exec ./venv/bin/hermes gateway run \
     --host 0.0.0.0 \
     --port 8000 \
     --log-level "$LOG_LEVEL" \
