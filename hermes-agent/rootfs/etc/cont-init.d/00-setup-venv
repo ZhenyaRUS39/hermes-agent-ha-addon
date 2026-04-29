@@ -1,4 +1,0 @@
-#!/usr/bin/with-contenv bash
-# Nothing to do — hermes-agent is pre-installed in /opt/hermes-agent at build time.
-# /data is only for config and runtime state.
-exit 0
