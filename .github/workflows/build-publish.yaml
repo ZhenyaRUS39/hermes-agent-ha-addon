@@ -23,13 +23,13 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: zhenyarus39
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract version
         id: version
         run: |
-          VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+\.[0-9]+' hermes_agent/Dockerfile)
+          VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)[0-9]+\.[0-9]+\.[0-9]+' hermes_agent/Dockerfile)
           echo "VERSION=${VERSION}"
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
