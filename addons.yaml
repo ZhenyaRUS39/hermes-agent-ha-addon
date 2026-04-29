@@ -1,5 +1,0 @@
-hermes_agent:
-  name: "Hermes Agent"
-  description: "Hermes Agent for Home Assistant"
-  url: "https://github.com/ZhenyaRUS39/hermes-agent-ha-addon"
-  version: "v2026.4.23"
