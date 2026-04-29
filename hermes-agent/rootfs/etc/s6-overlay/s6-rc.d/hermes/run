@@ -28,7 +28,7 @@ log_info "Hermes Agent starting..."
 
 # Configure Home Assistant credentials
 if config_exists "ha_token"; then
-    HA_TOKEN="$(get_config "ha_token")"
+    HA_TOKEN=$(get_config "ha_token")
     if [ -n "$HA_TOKEN" ]; then
         log_info "Configuring Home Assistant..."
         mkdir -p "${HERMES_CONFIG}/secrets"
@@ -37,40 +37,15 @@ if config_exists "ha_token"; then
         export HASS_TOKEN="$HA_TOKEN"
         log_info "HA token configured."
     fi
-fi
-
-if config_exists "ha_url"; then
-    export HASS_URL="$(get_config "ha_url")"
-fi
-
-# Create gateway.json to enable homeassistant platform
-if [ -n "$HASS_TOKEN" ]; then
-    mkdir -p "${HERMES_CONFIG}"
-    cat > "${HERMES_CONFIG}/gateway.json" << 'EOF'
-{
-  "platforms": {
-    "homeassistant": {
-      "enabled": true,
-      "token": "placeholder"
-    }
-  }
-}
-EOF
-    python3 -c "
-import json
-creds = json.load(open('${HERMES_CONFIG}/secrets/credentials.json'))
-token = creds.get('api_keys', {}).get('homeassistant', '')
-gw = json.load(open('${HERMES_CONFIG}/gateway.json'))
-gw['platforms']['homeassistant']['token'] = token
-json.dump(gw, open('${HERMES_CONFIG}/gateway.json', 'w'))
-"
-    log_info "Gateway config created."
+else
+    log_warning "HA token not configured..."
 fi
 
 # Wait for venv (s6-rc may start services before cont-init finishes)
 VENV_PATH="${HERMES_INSTALL}/venv"
 TIMEOUT=60
 ELAPSED=0
+
 while [ ! -d "$VENV_PATH" ]; do
     if [ $ELAPSED -ge $TIMEOUT ]; then
         log_error "Venv not found at ${VENV_PATH} after ${TIMEOUT}s"
