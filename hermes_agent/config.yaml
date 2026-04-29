@@ -1,5 +1,5 @@
 version: v2026.4.23
-slug: hermes-agent
+slug: hermes_agent
 name: Hermes Agent
 description: AI Agent with advanced tool-calling — integrated with Home Assistant via HA API
 url: https://github.com/ZhenyaRUS39/hermes-agent-ha-addon
