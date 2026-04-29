@@ -37,6 +37,7 @@ jobs:
         run: |
           docker buildx build --push \
             --platform linux/amd64 \
+            --tag ghcr.io/zhenyarus39/hermes-agent:amd64 \
             --tag ghcr.io/zhenyarus39/hermes-agent:linux-amd64-${{ steps.version.outputs.version }} \
             --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
             -f Dockerfile \
@@ -46,6 +47,7 @@ jobs:
         run: |
           docker buildx build --push \
             --platform linux/aarch64 \
+            --tag ghcr.io/zhenyarus39/hermes-agent:aarch64 \
             --tag ghcr.io/zhenyarus39/hermes-agent:linux-aarch64-${{ steps.version.outputs.version }} \
             --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
             -f Dockerfile \
