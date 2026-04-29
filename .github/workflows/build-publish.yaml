@@ -37,7 +37,7 @@ jobs:
         run: |
           docker buildx build --push \
             --platform linux/amd64 \
-            --tag ghcr.io/zhenyarus39/hermes_agent/linux-amd64:${{ steps.version.outputs.version }} \
+            --tag ghcr.io/zhenyarus39/hermes-agent:linux-amd64-${{ steps.version.outputs.version }} \
             --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
             -f hermes_agent/Dockerfile \
             hermes_agent/
@@ -46,14 +46,14 @@ jobs:
         run: |
           docker buildx build --push \
             --platform linux/aarch64 \
-            --tag ghcr.io/zhenyarus39/hermes_agent/linux-aarch64:${{ steps.version.outputs.version }} \
+            --tag ghcr.io/zhenyarus39/hermes-agent:linux-aarch64-${{ steps.version.outputs.version }} \
             --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
             -f hermes_agent/Dockerfile \
             hermes_agent/
 
-      - name: Create manifest list with buildx imagetools
+      - name: Create and push multi-arch manifest
         run: |
           docker buildx imagetools create \
             --tag ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }} \
-            ghcr.io/zhenyarus39/hermes_agent/linux-amd64:${{ steps.version.outputs.version }} \
-            ghcr.io/zhenyarus39/hermes_agent/linux-aarch64:${{ steps.version.outputs.version }}
+            ghcr.io/zhenyarus39/hermes-agent:linux-amd64-${{ steps.version.outputs.version }} \
+            ghcr.io/zhenyarus39/hermes-agent:linux-aarch64-${{ steps.version.outputs.version }}
