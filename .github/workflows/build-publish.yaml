@@ -39,7 +39,6 @@ jobs:
             --platform linux/amd64 \
             --tag ghcr.io/zhenyarus39/hermes-agent/linux-amd64:${{ steps.version.outputs.version }} \
             --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
-            --build-arg BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bookworm \
             --dockerfile hermes-agent/Dockerfile \
             hermes-agent/
 
@@ -49,7 +48,6 @@ jobs:
             --platform linux/aarch64 \
             --tag ghcr.io/zhenyarus39/hermes-agent/linux-aarch64:${{ steps.version.outputs.version }} \
             --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
-            --build-arg BUILD_FROM=ghcr.io/home-assistant/aarch64-base-debian:bookworm \
             --dockerfile hermes-agent/Dockerfile \
             hermes-agent/
 
