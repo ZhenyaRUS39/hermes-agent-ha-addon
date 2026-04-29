@@ -1,0 +1,26 @@
+name: Hermes Agent
+version: v2026.4.23
+slug: hermes_agent
+description: AI Agent with advanced tool-calling — integrated with Home Assistant
+url: https://github.com/ZhenyaRUS39/hermes-agent-ha-addon
+arch:
+  - aarch64
+  - amd64
+hassio_api: true
+startup: application
+boot: auto
+init: false
+ingress: true
+panel_icon: mdi:robot
+panel_title: Hermes AI
+map:
+  - addon_config:rw
+  - share:rw
+timeout: 30
+options:
+  log_level: info
+  ha_token: ""
+schema:
+  log_level: list(trace|debug|info|notice|warning|error|fatal)?
+  ha_token: str?
+image: ghcr.io/zhenyarus39/hermes-agent:linux-{arch}:v2026.4.23
