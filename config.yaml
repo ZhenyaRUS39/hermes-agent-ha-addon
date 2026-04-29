@@ -23,4 +23,4 @@ options:
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
   ha_token: str?
-image: ghcr.io/zhenyarus39/hermes-agent:linux-{arch}-v2026.4.23
+image: ghcr.io/zhenyarus39/hermes-agent:{arch}
