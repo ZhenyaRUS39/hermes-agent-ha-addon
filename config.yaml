@@ -1,4 +1,4 @@
-version: "v2026.4.23"
+version: v2026.4.23
 slug: hermes-agent
 name: Hermes Agent
 description: AI Agent with advanced tool-calling — integrated with Home Assistant via HA API
@@ -34,4 +34,4 @@ schema:
   update_on_start: bool?
   git_branch: str?
   ha_token: str?
-image: ghcr.io/zhenyarus39/hermes-agent/linux-{arch}:v{version}
+image: ghcr.io/zhenyarus39/hermes-agent/linux-{arch}:v2026.4.23
