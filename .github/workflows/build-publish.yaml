@@ -40,7 +40,8 @@ jobs:
             --tag ghcr.io/zhenyarus39/hermes-agent/linux-amd64:${{ steps.version.outputs.version }} \
             --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
             --build-arg BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bookworm \
-            .
+            --dockerfile hermes-agent/Dockerfile \
+            hermes-agent/
 
       - name: Build and push aarch64
         run: |
@@ -49,7 +50,8 @@ jobs:
             --tag ghcr.io/zhenyarus39/hermes-agent/linux-aarch64:${{ steps.version.outputs.version }} \
             --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
             --build-arg BUILD_FROM=ghcr.io/home-assistant/aarch64-base-debian:bookworm \
-            .
+            --dockerfile hermes-agent/Dockerfile \
+            hermes-agent/
 
       - name: Create manifest list with buildx imagetools
         run: |
