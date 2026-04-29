@@ -30,4 +30,4 @@ RUN git clone --branch ${HERMES_VERSION} --depth 1 \
     && ./venv/bin/pip install --upgrade pip \
     && ./venv/bin/pip install -e .
 
-COPY hermes-agent/rootfs /
+COPY rootfs /
