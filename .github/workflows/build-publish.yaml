@@ -29,7 +29,7 @@ jobs:
       - name: Extract version
         id: version
         run: |
-          VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+\.[0-9]+' hermes-agent/Dockerfile)
+          VERSION=$(grep -oP '(?<=ARG HERMES_VERSION=)v[0-9]+\.[0-9]+\.[0-9]+' hermes_agent/Dockerfile)
           echo "VERSION=${VERSION}"
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
@@ -37,23 +37,23 @@ jobs:
         run: |
           docker buildx build --push \
             --platform linux/amd64 \
-            --tag ghcr.io/zhenyarus39/hermes-agent/linux-amd64:${{ steps.version.outputs.version }} \
+            --tag ghcr.io/zhenyarus39/hermes_agent/linux-amd64:${{ steps.version.outputs.version }} \
             --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
-            -f hermes-agent/Dockerfile \
-            hermes-agent/
+            -f hermes_agent/Dockerfile \
+            hermes_agent/
 
       - name: Build and push aarch64
         run: |
           docker buildx build --push \
             --platform linux/aarch64 \
-            --tag ghcr.io/zhenyarus39/hermes-agent/linux-aarch64:${{ steps.version.outputs.version }} \
+            --tag ghcr.io/zhenyarus39/hermes_agent/linux-aarch64:${{ steps.version.outputs.version }} \
             --build-arg HERMES_VERSION=${{ steps.version.outputs.version }} \
-            -f hermes-agent/Dockerfile \
-            hermes-agent/
+            -f hermes_agent/Dockerfile \
+            hermes_agent/
 
       - name: Create manifest list with buildx imagetools
         run: |
           docker buildx imagetools create \
             --tag ghcr.io/zhenyarus39/hermes-agent:${{ steps.version.outputs.version }} \
-            ghcr.io/zhenyarus39/hermes-agent/linux-amd64:${{ steps.version.outputs.version }} \
-            ghcr.io/zhenyarus39/hermes-agent/linux-aarch64:${{ steps.version.outputs.version }}
+            ghcr.io/zhenyarus39/hermes_agent/linux-amd64:${{ steps.version.outputs.version }} \
+            ghcr.io/zhenyarus39/hermes_agent/linux-aarch64:${{ steps.version.outputs.version }}
