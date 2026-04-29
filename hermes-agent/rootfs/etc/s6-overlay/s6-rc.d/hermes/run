@@ -28,7 +28,7 @@ log_info "Hermes Agent starting..."
 
 # Configure Home Assistant credentials
 if config_exists "ha_token"; then
-    HA_TOKEN=$(get_config "ha_token")
+HA_TOKEN=$(get_config "ha_token")
     if [ -n "$HA_TOKEN" ]; then
         log_info "Configuring Home Assistant..."
         mkdir -p "${HERMES_CONFIG}/secrets"
