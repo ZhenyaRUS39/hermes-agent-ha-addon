@@ -1,5 +1,5 @@
 name: Hermes Agent
-version: 1.0.0
+version: v2026.4.23
 slug: hermes_agent
 description: AI Agent with advanced tool-calling — integrated with Home Assistant
 url: https://github.com/ZhenyaRUS39/hermes-agent-ha-addon
@@ -23,4 +23,4 @@ options:
 schema:
   log_level: list(trace|debug|info|notice|warning|error|fatal)?
   ha_token: str?
-image: ghcr.io/zhenyarus39/hermes_agent/linux-{arch}:1.0.0
+image: ghcr.io/zhenyarus39/hermes_agent/linux-{arch}:v2026.4.23
