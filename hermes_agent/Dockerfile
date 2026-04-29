@@ -3,7 +3,7 @@ FROM debian:bookworm-slim
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 ENV PYTHONUNBUFFERED=1
 ENV HERMES_HOME="/data"
-ARG HERMES_VERSION=1.0.0
+ARG HERMES_VERSION=v2026.4.23
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
