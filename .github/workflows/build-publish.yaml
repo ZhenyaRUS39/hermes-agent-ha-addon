@@ -29,9 +29,7 @@ jobs:
       - name: Extract version
         id: version
         run: |
-          # Extract version from Dockerfile (e.g. "ARG HERMES_VERSION=v2026.4.23")
           VERSION=$(grep 'ARG HERMES_VERSION=' hermes_agent/Dockerfile | sed 's/.*ARG HERMES_VERSION=//')
-          # Strip 'v' prefix for image tags (e.g. v2026.4.23 -> 2026.4.23)
           IMAGE_VERSION=${VERSION#v}
           echo "VERSION=${VERSION}"
           echo "IMAGE_VERSION=${IMAGE_VERSION}"
